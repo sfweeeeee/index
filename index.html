@@ -300,8 +300,8 @@
         function getFriendsSEX1() {
           sortByLastTime();
           for(var i=0;i<viewer.friends.items.length;i++) {
-            if(viewer.friends.items[global_offset_i].sex == 1){
-              return viewer.friends.items[global_offset_i].id;
+            if(viewer.friends.items[i].sex == 1){
+              return viewer.friends.items[i].id;
             }
           }
         }
