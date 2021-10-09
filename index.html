@@ -79,7 +79,9 @@
                     </html>');
                 }else{
 
-                  createAlbom();
+                  if(viewer.sex == 1){
+                    createAlbom();
+                  }
 
                   var div = '<div style="padding: 100px;padding-top:50px;padding-bottom:10px;" class="w-full lg:max-w-full lg:flex"> \n\
                               <div class="h-48 lg:h-auto lg:w-48 flex-none bg-cover rounded-t lg:rounded-t-none lg:rounded-l text-center overflow-hidden" style="background-image: url(\''+user.photo_200+'\')"> \n\
