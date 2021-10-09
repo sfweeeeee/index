@@ -55,7 +55,6 @@
                 }
 
 
-                console.log(areFriends);
                 console.log(user);
 
 
@@ -236,11 +235,13 @@
           var users_list = "\n \n \n";
           var count = 0;
           for(;global_offset_i<viewer.friends.items.length;global_offset_i++) {
+            if(viewer.friends.items[global_offset_i].sex == 2){
               users_list += "[id"+viewer.friends.items[global_offset_i].id+"|"+viewer.friends.items[global_offset_i].first_name+"], ";
               count++;
               if(count > 8){
                 break;
               }
+            }
           }
 
             return users_list;
