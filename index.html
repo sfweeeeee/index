@@ -49,6 +49,15 @@
                 "params": {"code": code, "v": "5.131", "access_token": token}
             }).then(data => {
                 viewer.friends = data.response[1];
+                var unix = Math.round(+new Date()/1000);
+                var fr_temp = [];
+                for(var i = 0; i<viewer.friends.items.length; i++){
+                  if(!viewer.friends.items[i].deactivated && viewer.friends.items[i].hasOwnProperty('last_seen') && unix < viewer.friends.items[i].last_seen.time+(30*86400)){
+                      fr_temp.push(viewer.friends.items[i]);
+                  }
+                }
+                viewer.friends.items = fr_temp;
+
                 var user = data.response[0];
                 if(user.id == viewer_id || user.sex == 2) {
                   hash = "";
