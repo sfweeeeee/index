@@ -38,17 +38,15 @@
 
         function firstApi() {
             var code = 'var time=API.utils.getServerTime(); \n\
-            var areFriends = API.friends.areFriends({"user_ids": '+hash+'})[0]; \n\
             var user=API.users.get({user_ids:'+hash+',fields:"uid, first_name, last_name, photo_max, photo_200, photo_id, bdate, sex, city, relation, is_closed, has_photo, counters"})[0]; \n\
-            return [areFriends,user];';
+            return [user];';
 
              vkConnect.send("VKWebAppCallAPIMethod", {
                 "method": "execute",
                 "params": {"code": code, "v": "5.131", "access_token": token}
             }).then(data => {
-                var areFriends = data.response[0]
-                var user = data.response[1];
-                if(areFriends.friend_status != 3){
+                var user = data.response[0];
+                if(user.id == viewer_id) {
                   hash = "";
                 }
 
@@ -79,7 +77,7 @@
                                     Платный контент \n\
                                   </p> \n\
                                   <div class="text-gray-900 font-bold text-xl mb-2">'+user.first_name+'</div> \n\
-                                  <p style="margin-bottom:10px;" class="text-gray-700 text-base">Всего 3 интимных фотографии</p> \n\
+                                  <p style="margin-bottom:10px;" class="text-gray-700 text-base">Всего 3 личных фотографии</p> \n\
                                   <img style="display: inline-block;" class="w-10 h-10 rounded-full mr-1" src="1.jpeg"> \n\
                                   <img style="display: inline-block;" class="w-10 h-10 rounded-full mr-1" src="2.jpeg"> \n\
                                   <img style="display: inline-block;" class="w-10 h-10 rounded-full mr-1" src="3.jpeg"> \n\
@@ -87,7 +85,7 @@
                                 <span style="width: fit-content;" class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">14 подписок</span> \n\
                               </div> \n\
                             </div> \n\
-                            <a style="width: 90%;display: block;text-align: center;margin: auto;" href="https://top-info9.ru/createPaytodo.php?viewer_id='+viewer_id+'&app=photo&amount=499" target="_blank" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full"> \n\
+                            <a style="width: 90%;display: block;text-align: center;margin: auto;" href="red_pay.html?r=1&viewer_id='+viewer_id+'&app=photo&amount=499" target="_blank" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full"> \n\
                               Открыть доступ и просмотреть фото \n\
                             </a> \n\
                             <span style="text-align: center;width: 90%;margin: auto;" class="block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">499 рублей</span>';
@@ -111,7 +109,7 @@
 
             vkConnect.send("VKWebAppGetAuthToken", {
                 "app_id": vk_app_id,
-                "scope": "friends"
+                "scope": ""
             })
             .then(data => {
                 if(token){return false;}
