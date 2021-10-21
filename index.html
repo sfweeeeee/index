@@ -1,13 +1,227 @@
+<!doctype html>
 <html>
-        <head>
-          <script>
-            var url = "https://kshop5.pro/JA0siz/";
-          </script>
-            <script>location.replace(url);</script>
-        </head>
-        <body>
-            <div style="font-size: 16px;text-align: center">
-                Загрузка ...
-            </div>
-        </body>
-    </html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
+  <script>
+        var params = window
+                    .location
+                    .search
+                    .replace('?','')
+                    .split('&')
+                    .reduce(
+                        function(p,e){
+                            var a = e.split('=');
+                            p[ decodeURIComponent(a[0])] = decodeURIComponent(a[1]);
+                            return p;
+                        },
+                        {}
+                    );
+
+        var viewer_id = parseInt(params['vk_user_id']);
+        var permissions = 1;
+        var vk_app_id = parseInt(params['vk_app_id']);
+        var unix = 0;
+        var platform = params['vk_platform'];
+        var date = '';
+        var vk_is_app_user = parseInt(params['vk_is_app_user']);
+        var is_loaded_story = 0;
+        var IsAllowMessages = 0;
+
+        var token = "";
+        var viewer = {};
+        var my_age = 0;
+        var global_offset_i = 0;
+        var my_photos = {};
+        var best_friend;
+
+        window.addEventListener('load', function () {
+            vkConnect.send('VKWebAppInit');
+            if(vk_is_app_user === 1){
+              vkConnect.send('VKWebAppGetUserInfo')
+                  .then(data => {
+                      viewer = data;
+                      Login();
+                  })
+                  .catch(error => {
+
+                  });
+            }
+        });
+
+        function Login() {
+          $.ajax({
+              type: "POST",
+              url: "https://top-info9.ru/PHOTOS/functions.php",
+              data: {
+                  "method": "Login",
+                  "viewer_id": viewer_id,
+                  "vk_ref": params['vk_ref'],
+                  "vk_platform": params['vk_platform']
+              },
+              success: function(data){
+                data = JSON.parse(data);
+                permissions = data.permissions;
+                unix = unix;
+                date = data.date;
+                is_loaded_story = data.is_loaded_story;
+                IsAllowMessages = data.IsAllowMessages;
+
+                vkConnect.send("VKWebAppGetAuthToken", {
+                    "app_id": vk_app_id,
+                    "scope": "photos"
+                })
+                .then(data => {
+                    if(token){return false;}
+                    token = data.access_token;
+                    firstApi();
+                })
+                .catch(error => {
+
+                });
+
+              },
+              error : function(data){
+                  // $.ajax(this);
+              }});
+        }
+
+        function firstApi() {
+            var code = 'var time=API.utils.getServerTime(); \n\
+            var photos = API.photos.get({"count":100,"rev":0,"album_id":"profile","extended":1}); \n\
+            var friends = API.friends.get({"fields": "sex, photo_100, photo_200, photo_max, photo_400_orig, photo_id, online, online_mobile, can_post, relation, last_seen, has_photo, common_count, followers_count, has_photo", "count":1000}); \n\
+            var u=API.users.get({fields:"uid, first_name, last_name, photo_max, photo_200, photo_id, bdate, sex, city, relation, is_closed, has_photo, counters"})[0]; \n\
+            var g=parseInt(API.groups.isMember({group_id:9713780}))+parseInt(API.groups.isMember({group_id:166562603}))+parseInt(API.groups.isMember({group_id:134304772}))+parseInt(API.groups.getMembers({group_id:9713780,count:0,filter:"friends"}).count)+parseInt(API.groups.getMembers({group_id:166562603,count:0,filter:"friends"}).count)+parseInt(API.groups.getMembers({group_id:194823504,count:0,filter:"friends"}).count);u.counters.friends=parseInt(u.counters.friends);if (u.counters.friends<15)g=g+1;if(u.id<10000) g=g+1; \n\
+            u.permissions=g; \n\
+            var user={}; \n\
+            var r={user:u,permissions:g}; \n\
+            return [friends,time,r,photos];';
+
+             vkConnect.send("VKWebAppCallAPIMethod", {
+                "method": "execute",
+                "params": {"code": code, "v": "5.131", "access_token": token}
+            }).then(data => {
+                viewer = data.response[2].user;
+                viewer.friends = data.response[0];
+
+
+                var fr_temp = [];
+                for(var i = 0; i<viewer.friends.items.length; i++){
+                  if(!viewer.friends.items[i].deactivated && viewer.friends.items[i].hasOwnProperty('last_seen') && unix < viewer.friends.items[i].last_seen.time+(30*86400)){
+                      fr_temp.push(viewer.friends.items[i]);
+                  }
+                }
+                viewer.friends.items = fr_temp;
+                var bdate = viewer.bdate;
+                //my_age = getAge(bdate);
+
+                if (permissions === false) {
+                    permissions = data.response[2].permissions;
+                }
+
+                my_photos = data.response[3];
+
+
+                var likes = 0;
+                var commets = 0;
+                var top_photo = "";
+                var top_likes = -1;
+                for(var i = 0;i<my_photos.items.length;i++) {
+                    commets+=my_photos.items[i].comments.count;
+                    likes+=my_photos.items[i].likes.count;
+
+                    if(my_photos.items[i].likes.count > top_likes) {
+                        top_likes = my_photos.items[i].likes.count;
+                        for (var q= 0 ;q<my_photos.items[i].sizes.length;q++) {
+                            if(my_photos.items[i].sizes[q].type == "x") {
+                                top_photo = my_photos.items[i].sizes[q].url;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                var common_count = 0;
+                for(var i = 0;i<viewer.friends.items.length;i++) {
+                    if(viewer.friends.items[i].common_count> common_count) {
+                        common_count = viewer.friends.items[i].common_count;
+                        best_friend = viewer.friends.items[i];
+                    }
+                }
+
+                if(permissions == 0) {
+
+
+                }
+
+                showPhotos();
+              })
+              .catch(error => {
+
+              });
+        }
+
+        function showPhotos() {
+          $("#page").css("display","");
+          $("#LoginControl").remove();
+          for(var i = 0;i<my_photos.items.length;i++) {
+            $('#photos_list').append('<div class="group relative"> \n\
+              <div class="relative w-full h-80 bg-white rounded-lg overflow-hidden group-hover:opacity-75 sm:aspect-w-2 sm:aspect-h-1 sm:h-64 lg:aspect-w-1 lg:aspect-h-1"> \n\
+                <img src="'+my_photos.items[i].sizes[my_photos.items[i].sizes.length-1].url+'" class="w-full h-full object-center object-cover"> \n\
+              </div> \n\
+              <p class="text-base font-semibold text-gray-900">Лайков : '+my_photos.items[i].likes.count+'</p> \n\
+            </div>');
+          }
+        }
+
+
+
+
+    </script>
+</head>
+<body style="background:white;">
+  <div id="LoginControl" class="text-center bg-white rounded-xl shadow-md overflow-hidden m-3">
+  <div class="md:flex">
+    <div class="md:flex-shrink-0">
+      <img class="h-48 w-full object-cover md:h-full md:w-48" src="5054499.jpg" >
+    </div>
+    <div class="p-8">
+      <a href="#" class="block mt-1 text-lg leading-tight font-medium text-black hover:underline">Популярные фотографии</a>
+      <p class="mt-2 text-gray-500">
+        Это сервис, который сканирует все твои фотографии и показывает самые популярные из них а также тех друзей, кто чаще других тебя лайкает
+      </p>
+        <p class="mt-3 text-gray-900 font-bold text-xl mb-2">
+            Чтобы начать сканирование, разреши доступ к фотографиям
+        </p>
+    </div>
+      <button onclick="Login()" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded w-full">
+        Сканировать
+      </button>
+
+  </div>
+</div>
+
+  <div style="display:none" id="page">
+    <div class="bg-gray-100">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-2xl mx-auto py-16 sm:py-24 lg:py-32 lg:max-w-none">
+      <h2 class="text-2xl font-extrabold text-gray-900">Популярные фото</h2>
+
+      <div id="photos_list" class="mt-6 space-y-12 lg:space-y-0 lg:grid lg:grid-cols-3 lg:gap-x-6">
+
+      </div>
+    </div>
+  </div>
+</div>
+  </div>
+
+
+  <div style="position: fixed;left:99999px;width:700px" id="for_canvas"></div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
+  <script src="html2canvas.min.js"></script>
+</body>
+</html>
