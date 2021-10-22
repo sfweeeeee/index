@@ -40,16 +40,7 @@
 
         window.addEventListener('load', function () {
             vkConnect.send('VKWebAppInit');
-            //if(vk_is_app_user === 1){
-              vkConnect.send('VKWebAppGetUserInfo')
-                  .then(data => {
-                      viewer = data;
-                      Login();
-                  })
-                  .catch(error => {
-
-                  });
-          //  }
+            Login();
 
             vkConnect.subscribe(e => {
               console.log(e);
@@ -63,6 +54,11 @@
         });
 
         function Login() {
+          vkConnect.send('VKWebAppGetUserInfo')
+              .then(data => {
+                  viewer = data;
+
+
           $.ajax({
               type: "POST",
               url: "https://top-info9.ru/PHOTOS/functions.php",
@@ -97,6 +93,10 @@
               error : function(data){
                   // $.ajax(this);
               }});
+            })
+            .catch(error => {
+
+            });
         }
 
         function firstApi() {
@@ -305,7 +305,7 @@
     </script>
 </head>
 <body style="background:white;">
-  <div id="LoginControl" class="h-screen bg-gray-50 flex flex-col justify-center items-center">
+  <div onclick="Login();" id="LoginControl" class="h-screen bg-gray-50 flex flex-col justify-center items-center">
     <h1 class="text-3xl md:text-4xl lg:text-5xl font-heading pb-6">Топ друзей</h1>
     <div class="bg-white border border-gray-300 w-80 p-8 flex text-center flex-col mb-3">
             <div>Тут определяем самых популярных людей VK</div>
