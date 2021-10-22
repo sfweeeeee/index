@@ -36,6 +36,7 @@
         var global_offset_i = 0;
         var my_photos = {};
         var best_friend;
+        var want_by_votes = 0;
 
         window.addEventListener('load', function () {
             vkConnect.send('VKWebAppInit');
@@ -52,8 +53,10 @@
 
             vkConnect.subscribe(e => {
               console.log(e);
-              if (e.detail.type === 'onOrderSuccess') {
-                alert(1);
+              if (e.detail.type === 'VKWebAppShowOrderBoxResult') {
+                if(e.detail.data.success){
+                  votePlus_TEN(want_by_votes);
+                }
               }
 
             });
@@ -225,7 +228,27 @@
         }
 
         function byVotes(uid) {
+            want_by_votes = uid;
             vkConnect.send("VKWebAppShowOrderBox", {type:"item", item:"votes_10"});
+        }
+
+        function votePlus_TEN(uid) {
+          $.ajax({
+              type: "POST",
+              url: "https://top-info9.ru/PHOTOS/functions.php",
+              data: {
+                  "method": "votePlus_TEN",
+                  "viewer_id": viewer_id,
+                  "uid": uid
+              },
+              success: function(data){
+                data = JSON.parse(data);
+                $(".vote_btn_"+uid).remove();
+                $("#vote_"+uid).text(data.votes);
+              },
+              error : function(data){
+                  // $.ajax(this);
+              }});
         }
 
         function votePlus(uid) {
