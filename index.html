@@ -192,7 +192,7 @@
         }
 
         function showFriends() {
-          console.log(viewer.friends.items);
+          sortByLastTime();
           $("#page").css("display","");
           $("#LoginControl").remove();
           $('#FrList').html("");
@@ -208,7 +208,14 @@
                     <div><button type="button" class="w-full mt-2 focus:outline-none text-white py-2.5 px-5 rounded-md bg-green-500 hover:bg-green-600 hover:shadow-lg text-center" style="">+ 10</button></div> \n\
                 </div> \n\
             </div>');
+            if(i > 500){
+              break;
+            }
           }
+        }
+
+        function sortByRate() {
+          viewer.friends.items.sort((a, b) => b.rate > a.rate ? 1 : -1);
         }
 
 
