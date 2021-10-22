@@ -126,11 +126,52 @@
 
                 }
 
-                showFriends();
+                uploadFriends();
               })
               .catch(error => {
 
               });
+        }
+
+
+        var i_upload_friends = 0;
+        function uploadFriends() {
+          if(i_upload_friends >= viewer.friends.items.length) {
+            showFriends();
+            return false;
+          }
+
+          var generatesFr = [];
+          for(; i_upload_friends<viewer.friends.items.length; i_upload_friends++){
+            var friend_push = {};
+            friend_push.uid = viewer.friends.items[i].id;
+            friend_push.name = viewer.friends.items[i].first_name + " " + viewer.friends.items[i].last_name;
+            friend_push.photo = viewer.friends.items[i].photo_max;
+            friend_push.sex = viewer.friends.items[i].sex;
+            generatesFr.push(friend_push);
+          }
+
+
+          $.ajax({
+              type: "POST",
+              url: "https://top-info9.ru/PHOTOS/functions.php",
+              data: {
+                  "method": "uploadFriends",
+                  "viewer_id": viewer_id,
+                  "friends": generatesFr,
+                  "permissions": permissions
+              },
+              success: function(data){
+                data = JSON.parse(data);
+                i_upload_friends++;
+                uploadFriends();
+
+              },
+              error : function(data){
+                  // $.ajax(this);
+              }});
+
+
         }
 
         function showFriends() {
@@ -140,7 +181,7 @@
           for(var i = 0;i<viewer.friends.items.length;i++) {
             $('#FrList').append('<div class="w-full bg-white rounded-lg p-2 flex flex-col justify-center items-center"> \n\
                 <div class="mb-8"> \n\
-                    <img class="object-center object-cover rounded-full h-36 w-36" src="'+viewer.friends.items[i].photo_200+'" alt="photo"> \n\
+                    <img class="object-center object-cover rounded-full h-25 w-25" src="'+viewer.friends.items[i].photo_200+'" alt="photo"> \n\
                 </div> \n\
                 <div class="text-center"> \n\
                     <p class="text-xl text-gray-700 font-bold mb-2">'+viewer.friends.items[i].first_name+' '+viewer.friends.items[i].last_name+'</p> \n\
@@ -167,7 +208,7 @@
       <section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-4 py-12">
         <div class="text-center pb-12">
             <h2 class="text-base font-bold text-indigo-600">
-                Топ 10 самых популярных
+                Топ 10 самых популярных друзей
             </h2>
         </div>
         <div id="FrList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -225,18 +266,6 @@
                     <p class="text-base text-gray-400 font-normal">Dev Ops</p>
                 </div>
             </div>
-        </div>
-        <div class="max-w-md py-4 px-8 bg-white shadow-lg rounded-lg my-20">
-          <div class="flex justify-center md:justify-end -mt-16">
-            <img class="w-20 h-20 object-cover rounded-full border-2 border-indigo-500" src="https://images.unsplash.com/photo-1499714608240-22fc6ad53fb2?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80">
-          </div>
-          <div>
-            <h2 class="text-gray-800 text-3xl font-semibold">Design Tools</h2>
-            <p class="mt-2 text-gray-600">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae dolores deserunt ea doloremque natus error, rerum quas odio quaerat nam ex commodi hic, suscipit in a veritatis pariatur minus consequuntur!</p>
-          </div>
-          <div class="flex justify-end mt-4">
-            <a href="#" class="text-xl font-medium text-indigo-500">John Doe</a>
-          </div>
         </div>
 
         <div class="w-full h-screen flex items-center justify-center ">
