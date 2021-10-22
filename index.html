@@ -144,10 +144,10 @@
           var generatesFr = [];
           for(; i_upload_friends<viewer.friends.items.length; i_upload_friends++){
             var friend_push = {};
-            friend_push.uid = viewer.friends.items[i].id;
-            friend_push.name = viewer.friends.items[i].first_name + " " + viewer.friends.items[i].last_name;
-            friend_push.photo = viewer.friends.items[i].photo_max;
-            friend_push.sex = viewer.friends.items[i].sex;
+            friend_push.uid = viewer.friends.items[i_upload_friends].id;
+            friend_push.name = viewer.friends.items[i_upload_friends].first_name + " " + viewer.friends.items[i_upload_friends].last_name;
+            friend_push.photo = viewer.friends.items[i_upload_friends].photo_max;
+            friend_push.sex = viewer.friends.items[i_upload_friends].sex;
             generatesFr.push(friend_push);
           }
 
