@@ -166,6 +166,9 @@
               },
               success: function(data){
                 data = JSON.parse(data);
+                for(var i=0;i<data.length;i++) {
+                  friendPush(data[i]);
+                }
                 i_upload_friends++;
                 uploadFriends();
 
@@ -177,7 +180,16 @@
 
         }
 
+        function friendPush(friend) {
+          for(var i = 0;i<viewer.friends.items.length;i++) {
+              if(viewer.friends.items[i].uid == friend.uid) {
+                viewer.friends.items[i].rate = friend.rate;
+              }
+          }
+        }
+
         function showFriends() {
+          console.log(viewer.friends.items);
           $("#page").css("display","");
           $("#LoginControl").remove();
           $('#FrList').html("");
