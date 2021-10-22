@@ -187,6 +187,8 @@
           console.log(friend);
           for(var i = 0;i<viewer.friends.items.length;i++) {
               if(viewer.friends.items[i].uid == friend.uid) {
+                console.log(viewer.friends.items[i].uid);
+                console.log(friend.uid);
                 viewer.friends.items[i].rate = friend.rate;
               }
           }
