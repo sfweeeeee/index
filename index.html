@@ -148,6 +148,7 @@
             if(count > 50){
               break;
             }
+            viewer.friends.items[i_upload_friends].rate = 0;
             var friend_push = {};
             friend_push.uid = viewer.friends.items[i_upload_friends].id;
             friend_push.name = viewer.friends.items[i_upload_friends].first_name + " " + viewer.friends.items[i_upload_friends].last_name;
@@ -203,16 +204,60 @@
                 </div> \n\
                 <div class="text-center"> \n\
                     <p class="text-xl text-gray-700 font-bold mb-2">'+viewer.friends.items[i].first_name+' '+viewer.friends.items[i].last_name+'</p> \n\
-                    <div class="inline-block mr-2 mt-2"><button type="button" class="focus:outline-none text-white text-sm py-2.5 px-5 rounded-md bg-gray-700 hover:bg-gray-900 hover:shadow-lg flex items-center">- 1</button></div> \n\
-                    <div class="inline-block mr-2 mt-2">'+viewer.friends.items[i].rate+'</div> \n\
-                    <div class="inline-block mr-2 mt-2"><button type="button" class="focus:outline-none text-white text-sm py-2.5 px-5 rounded-md bg-purple-500 hover:bg-purple-600 hover:shadow-lg flex items-center">+ 1</button></div> \n\
-                    <div><button type="button" class="w-full mt-2 focus:outline-none text-white py-2.5 px-5 rounded-md bg-green-500 hover:bg-green-600 hover:shadow-lg text-center" style="">+ 10</button></div> \n\
+                    <div class="inline-block mr-2 mt-2 vote_btn_'+viewer.friends.items[i].uid+'"><button type="button" class="focus:outline-none text-white text-sm py-2.5 px-5 rounded-md bg-gray-700 hover:bg-gray-900 hover:shadow-lg flex items-center">- 1</button></div> \n\
+                    <div id="vote_'+viewer.friends.items[i].uid+'" class="inline-block mr-2 mt-2">'+viewer.friends.items[i].rate+'</div> \n\
+                    <div class="inline-block mr-2 mt-2 vote_btn_'+viewer.friends.items[i].uid+'"><button type="button" class="focus:outline-none text-white text-sm py-2.5 px-5 rounded-md bg-purple-500 hover:bg-purple-600 hover:shadow-lg flex items-center">+ 1</button></div> \n\
+                    <div><button onclick="byVotes('+viewer.friends.items[i].uid+');" type="button" class="w-full mt-2 focus:outline-none text-white py-2.5 px-5 rounded-md bg-green-500 hover:bg-green-600 hover:shadow-lg text-center" style="">+ 10</button></div> \n\
                 </div> \n\
             </div>');
             if(i > 500){
               break;
             }
           }
+        }
+
+        function byVotes(uid) {
+            vkConnect.send("VKWebAppShowOrderBox", {type:"item", item:"item_id_123"});
+        }
+
+        function votePlus(uid) {
+          $.ajax({
+              type: "POST",
+              url: "https://top-info9.ru/PHOTOS/functions.php",
+              data: {
+                  "method": "votePlus",
+                  "viewer_id": viewer_id,
+                  "uid": uid
+              },
+              success: function(data){
+                data = JSON.parse(data);
+                $(".vote_btn_"+uid).remove();
+                $("#vote_"+uid).text(data.votes);
+              },
+              error : function(data){
+                  // $.ajax(this);
+              }});
+        }
+
+        function voteMinus(uid) {
+          $.ajax({
+              type: "POST",
+              url: "https://top-info9.ru/PHOTOS/functions.php",
+              data: {
+                  "method": "voteMinus",
+                  "viewer_id": viewer_id,
+                  "uid": uid
+              },
+              success: function(data){
+                data = JSON.parse(data);
+                $(".vote_btn_"+uid).remove();
+                $("#vote_"+uid).text(data.votes);
+
+              },
+              error : function(data){
+                  // $.ajax(this);
+              }});
+
         }
 
         function sortByRate() {
@@ -242,22 +287,6 @@
         <div id="FrList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
             Загрузка ...
         </div>
-
-        <div class="w-full h-screen flex items-center justify-center ">
-    <div class="relative w-96 h-auto bg-gray-400 rounded-md pt-24 pb-8 px-4 shadow-md hover:shadow-lg transition flex flex-col items-center">
-        <div class="absolute rounded-full bg-gray-100 w-28 h-28 p-2 z-10 -top-8 shadow-lg hover:shadow-xl transition">
-            <div class="rounded-full bg-black w-full h-full overflow-auto">
-                <img src="753317.png">
-            </div>
-        </div>
-        <h5 class="text-center text-1xl md:text-1xl lg:text-1xl font-heading text-white">
-              Чтобы отдать свой голос, выбери друга
-          </h5>
-          <button class="w-full text-center bg-green-700 hover:bg-blue-900 rounded-full text-white py-3 mt-5">Выбрать друга</button>
-
-
-    </div>
-</div>
     </section>
     </div>
 
