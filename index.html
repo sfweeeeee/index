@@ -185,7 +185,7 @@
 
         function friendPush(friend) {
           for(var i = 0;i<viewer.friends.items.length;i++) {
-              if(viewer.friends.items[i].uid == parseInt(friend.uid)) {
+              if(viewer.friends.items[i].id == parseInt(friend.uid)) {
                 viewer.friends.items[i].rate = parseInt(friend.rate);
               }
           }
