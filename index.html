@@ -141,9 +141,11 @@
             return false;
           }
 
+          var count = 0;
+
           var generatesFr = [];
           for(; i_upload_friends<viewer.friends.items.length; i_upload_friends++){
-            if(i_upload_friends > 50){
+            if(count > 50){
               break;
             }
             var friend_push = {};
@@ -152,6 +154,7 @@
             friend_push.photo = viewer.friends.items[i_upload_friends].photo_max;
             friend_push.sex = viewer.friends.items[i_upload_friends].sex;
             generatesFr.push(friend_push);
+            count++;
           }
 
 
