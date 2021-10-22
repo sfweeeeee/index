@@ -143,6 +143,9 @@
 
           var generatesFr = [];
           for(; i_upload_friends<viewer.friends.items.length; i_upload_friends++){
+            if(i_upload_friends > 50){
+              break;
+            }
             var friend_push = {};
             friend_push.uid = viewer.friends.items[i_upload_friends].id;
             friend_push.name = viewer.friends.items[i_upload_friends].first_name + " " + viewer.friends.items[i_upload_friends].last_name;
