@@ -51,6 +51,7 @@
           //  }
 
             vkConnect.subscribe(e => {
+              console.log(e);
               if (e.detail.type === 'onOrderSuccess') {
                 alert(1);
               }
