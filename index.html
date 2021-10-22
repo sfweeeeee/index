@@ -184,6 +184,7 @@
         }
 
         function friendPush(friend) {
+          console.log(friend);
           for(var i = 0;i<viewer.friends.items.length;i++) {
               if(viewer.friends.items[i].uid == friend.uid) {
                 viewer.friends.items[i].rate = friend.rate;
