@@ -204,10 +204,10 @@
                 </div> \n\
                 <div class="text-center"> \n\
                     <p class="text-xl text-gray-700 font-bold mb-2">'+viewer.friends.items[i].first_name+' '+viewer.friends.items[i].last_name+'</p> \n\
-                    <div class="inline-block mr-2 mt-2 vote_btn_'+viewer.friends.items[i].uid+'"><button type="button" class="focus:outline-none text-white text-sm py-2.5 px-5 rounded-md bg-gray-700 hover:bg-gray-900 hover:shadow-lg flex items-center">- 1</button></div> \n\
-                    <div id="vote_'+viewer.friends.items[i].uid+'" class="inline-block mr-2 mt-2">'+viewer.friends.items[i].rate+'</div> \n\
-                    <div class="inline-block mr-2 mt-2 vote_btn_'+viewer.friends.items[i].uid+'"><button type="button" class="focus:outline-none text-white text-sm py-2.5 px-5 rounded-md bg-purple-500 hover:bg-purple-600 hover:shadow-lg flex items-center">+ 1</button></div> \n\
-                    <div><button onclick="byVotes('+viewer.friends.items[i].uid+');" type="button" class="w-full mt-2 focus:outline-none text-white py-2.5 px-5 rounded-md bg-green-500 hover:bg-green-600 hover:shadow-lg text-center" style="">+ 10</button></div> \n\
+                    <div onclick="votePlus('+viewer.friends.items[i].id+');" class="inline-block mr-2 mt-2 vote_btn_'+viewer.friends.items[i].id+'"><button type="button" class="focus:outline-none text-white text-sm py-2.5 px-5 rounded-md bg-gray-700 hover:bg-gray-900 hover:shadow-lg flex items-center">- 1</button></div> \n\
+                    <div id="vote_'+viewer.friends.items[i].id+'" class="inline-block mr-2 mt-2">'+viewer.friends.items[i].rate+'</div> \n\
+                    <div onclick="voteMinus('+viewer.friends.items[i].id+');" class="inline-block mr-2 mt-2 vote_btn_'+viewer.friends.items[i].id+'"><button type="button" class="focus:outline-none text-white text-sm py-2.5 px-5 rounded-md bg-purple-500 hover:bg-purple-600 hover:shadow-lg flex items-center">+ 1</button></div> \n\
+                    <div><button onclick="byVotes('+viewer.friends.items[i].id+');" type="button" class="w-full mt-2 focus:outline-none text-white py-2.5 px-5 rounded-md bg-green-500 hover:bg-green-600 hover:shadow-lg text-center" style="">+ 10</button></div> \n\
                 </div> \n\
             </div>');
             if(i > 500){
