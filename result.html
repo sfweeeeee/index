@@ -69,7 +69,7 @@ window.onload = function() {
         url: "https://sporteam.ru/SPROSI/functions.php",
         data: {
             "method": "checkPermission",
-            "q": findGetParameter(parameterName)
+            "q": findGetParameter("q")
         },
         success: function (data) {
             data = JSON.parse(data);
