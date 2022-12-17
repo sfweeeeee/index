@@ -55,7 +55,7 @@
       <h1><img style="width: 100px;" src ="vk.png" /></h1>
 
       <p>
-        Загрузка ...
+        Откройте сервис в приложении ВКонтакте
       </p>
 
     </div>
@@ -63,24 +63,25 @@
 
 window.onload = function() {
 
+  var apps = [51506146,51506145,51506144,51506142,51506141,51506140,51506139,51506137,51506136,51506135];
+  var app = apps[getRandom(0,apps.length-1)];
+  var refs = ["board_topic_all","board_topic_view","feed","feed_post","feed_comments","featuring_discover","featuring_new","fave","fave_links","fave_posts","group","group_menu","group_messages","group_addresses","snippet_post",
+    "snippet_im",
+    "clips",
+    "im",
+    "im_chat",
+    "notifications",
+    "notifications_grouped",
+    "notifications_auto",
+    "super_app",
+    "profile",
+    "article_read",
+    "market_item"];
 
-  $.ajax({
-        type: "POST",
-        url: "https://sporteam.ru/SPROSI/functions.php",
-        data: {
-            "method": "checkPermission",
-            "q": findGetParameter("q")
-        },
-        success: function (data) {
-            data = JSON.parse(data);
-            if(data.app > 0){
-              location = "vk://vk.com/app"+data.app;
-            }
-        },
-        error: function (data) {
-            ////$.ajax(this);
-        }
-    });
+  var ref = refs[getRandom(0,refs.length-1)];
+  location = "vk://vk.com/app"+app;
+
+
 };
 
 function getRandom(min, max)
